@@ -8,6 +8,8 @@ import time
 import subprocess
 from shutil import move
 
+# Creates all needed directories
+# Except for "DeleteMe" which is created later
 def InitialSetup():
 	if os.path.isdir("Crop") == False:
 		os.makedirs("Crop")
@@ -18,6 +20,7 @@ def InitialSetup():
 	if os.path.isdir("CropRotate") == False:
 		os.makedirs("CropRotate")
 
+# Rotates your image based on horizontal lines it can find
 def RotateImage(image, outputFile):
 	img_before = cv2.imread(image)
 
@@ -37,6 +40,7 @@ def RotateImage(image, outputFile):
 
 	median_angle = np.median(angles)
 	print("Angle is {}".format(median_angle))
+	# I dont want to do small adjustments, only ones that are big turns
 	if int(median_angle) in range(-190, -179) or int(median_angle) in range(-100, -79) or int(median_angle) in range(80, 101) or int(median_angle) in range(170, 191) or int(median_angle) in range(-1,5):
 		print("Rotating")
 		img_rotated = ndimage.rotate(img_before, median_angle)
@@ -50,11 +54,14 @@ def CropImage(image):
 	if bbox:
 		return im.crop(bbox)
 
+# Each page in a PDF is output as its own image
 def ConvertPDF(exeLocation, inputFile, outputFile):
 	subprocess.Popen('"%s" -png %s %s' % (exeLocation, inputFile, outputFile)).wait()
 
 InitialSetup()
 while True:
+	# If we can't find a directory called "DeleteMe"
+	# We're going to go ahead and clear out all our folders and reset
 	if os.path.isdir("DeleteMe") == False:
 		print("Resetting directories...")
 		try:
@@ -76,6 +83,7 @@ while True:
 			os.makedirs("DeleteMe")
 			print("Reset")
 	else:
+		# checking to make sure our folders are empty, if they're not we'll start editing pictures
 		toCrop = len([name for name in os.listdir('Crop')])
 		toRotate = len([name for name in os.listdir('Rotate')])
 		toCropAndRotate = len([name for name in os.listdir('CropRotate')])
@@ -130,6 +138,7 @@ while True:
 					move("CropRotate/" + item, "Raw/" + item)
 		except Exception as e:
 			print(e)
+	# Checking for folder updates every three seconds
 	time.sleep(3)
 
 
