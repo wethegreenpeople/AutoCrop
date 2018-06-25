@@ -8,6 +8,16 @@ import time
 import subprocess
 from shutil import move
 
+def InitialSetup():
+	if os.path.isdir("Crop") == False:
+		os.makedirs("Crop")
+	if os.path.isdir("Rotate") == False:
+		os.makedirs("Rotate")
+	if os.path.isdir("Raw") == False:
+		os.makedirs("Raw")
+	if os.path.isdir("CropRotate") == False:
+		os.makedirs("CropRotate")
+
 def RotateImage(image, outputFile):
 	img_before = cv2.imread(image)
 
@@ -43,6 +53,7 @@ def CropImage(image):
 def ConvertPDF(exeLocation, inputFile, outputFile):
 	subprocess.Popen('"%s" -png %s %s' % (exeLocation, inputFile, outputFile)).wait()
 
+InitialSetup()
 while True:
 	if os.path.isdir("DeleteMe") == False:
 		print("Resetting directories...")
