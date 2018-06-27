@@ -51,6 +51,10 @@ def CropImage(image):
 	diff = ImageChops.difference(image, bg)
 	diff = ImageChops.add(diff, diff, 2.0, -100)
 	bbox = diff.getbbox()
+	precentChange = int(((image.size[0] - bbox[2]) / image.size[0]) * 100)
+	#print(str(bbox))
+	#print(str(image.size))
+	print("Crop amount: " + str(precentChange) + "%")
 	if bbox:
 		return im.crop(bbox)
 
